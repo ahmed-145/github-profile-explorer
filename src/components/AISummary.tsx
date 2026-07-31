@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Bot, Sparkles, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bot, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { GitHubUser, GitHubRepo } from '@/lib/github';
 
 interface AISummaryProps {
@@ -57,7 +57,7 @@ export default function AISummary({ user, repos }: AISummaryProps) {
     return lines.map((line, i) => {
       if (line.startsWith('## ')) {
         return (
-          <h3 key={i} className="text-white font-medium text-sm mt-3 mb-1 first:mt-0">
+          <h3 key={i} className="text-[#f0f6fc] font-medium text-xs mt-3 mb-1 first:mt-0">
             {line.replace('## ', '')}
           </h3>
         );
@@ -72,7 +72,7 @@ export default function AISummary({ user, repos }: AISummaryProps) {
       if (line.startsWith('- ') || line.startsWith('* ')) {
         const content = line.replace(/^[-*] /, '');
         return (
-          <li key={i} className="text-zinc-300 text-xs ml-3 list-disc leading-relaxed">
+          <li key={i} className="text-[#8b949e] text-xs ml-3 list-disc leading-relaxed">
             <span dangerouslySetInnerHTML={{ __html: formatInline(content) }} />
           </li>
         );
@@ -81,7 +81,7 @@ export default function AISummary({ user, repos }: AISummaryProps) {
         return <br key={i} />;
       }
       return (
-        <p key={i} className="text-zinc-300 text-xs leading-relaxed">
+        <p key={i} className="text-[#8b949e] text-xs leading-relaxed">
           <span dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
         </p>
       );
@@ -89,17 +89,17 @@ export default function AISummary({ user, repos }: AISummaryProps) {
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
-      <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+    <div className="bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-[#30363d] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles size={15} className="text-zinc-400" />
-          <h3 className="font-medium text-white text-sm">AI Profile Analysis</h3>
+          <Bot size={14} className="text-[#8b949e]" />
+          <h3 className="font-medium text-[#f0f6fc] text-xs">Profile Analysis</h3>
         </div>
         <div className="flex items-center gap-2">
           {(content || error) && (
             <button
               onClick={analyze}
-              className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-xs text-[#8b949e] hover:text-[#f0f6fc] transition-colors"
               id="ai-refresh-btn"
             >
               <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
@@ -109,7 +109,7 @@ export default function AISummary({ user, repos }: AISummaryProps) {
           {content && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-zinc-400 hover:text-white transition-colors"
+              className="text-[#8b949e] hover:text-[#f0f6fc] transition-colors"
             >
               {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
@@ -119,26 +119,24 @@ export default function AISummary({ user, repos }: AISummaryProps) {
 
       <div className="p-4">
         {!content && !loading && !error && (
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <Bot size={20} className="text-zinc-500" />
-            <p className="text-zinc-400 text-xs">
-              Generate AI profile analysis for {user.name ?? user.login}
+          <div className="flex flex-col items-center gap-2 py-2 text-center">
+            <p className="text-[#8b949e] text-xs">
+              Generate profile summary for {user.name ?? user.login}
             </p>
             <button
               onClick={analyze}
               id="ai-analyze-btn"
-              className="bg-white text-black text-xs font-medium px-4 py-2 rounded hover:bg-zinc-200 transition-colors flex items-center gap-1.5"
+              className="bg-[#21262d] border border-[#30363d] text-[#c9d1d9] text-xs font-medium px-3 py-1.5 rounded hover:bg-[#30363d] hover:text-white transition-colors"
             >
-              <Sparkles size={13} />
-              Analyze Profile
+              Run Analysis
             </button>
           </div>
         )}
 
         {loading && !content && (
-          <div className="flex items-center gap-2 py-3 text-xs text-zinc-400">
+          <div className="flex items-center gap-2 py-2 text-xs text-[#8b949e]">
             <RefreshCw size={12} className="animate-spin" />
-            <span>Analyzing profile data...</span>
+            <span>Analyzing...</span>
           </div>
         )}
 
@@ -166,7 +164,7 @@ function formatInline(text: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
   return escaped
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#f0f6fc]">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code class="text-zinc-300 text-xs bg-zinc-800 px-1 rounded">$1</code>');
+    .replace(/`(.+?)`/g, '<code class="text-[#c9d1d9] text-xs bg-[#0d1117] px-1 rounded">$1</code>');
 }

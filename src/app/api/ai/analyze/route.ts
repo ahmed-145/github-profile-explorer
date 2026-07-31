@@ -50,25 +50,22 @@ export async function POST(req: NextRequest) {
 ${repoList}
 
 Please provide:
-## 🎯 Developer Archetype
-What type of developer is this? (e.g., Open Source Champion, Polyglot Engineer, Specialist, etc.)
+## Developer Overview
+Direct technical summary of the developer's profile and focus areas.
 
-## 💡 Key Strengths
-Their main technical strengths based on the data.
+## Core Strengths
+Technical strengths based on language usage and repository data.
 
-## 🔥 Activity & Impact
-Assessment of their contribution patterns and community impact.
+## Activity & Impact
+Contribution consistency and repository reach.
 
-## 🚀 Notable Projects
-Highlights from their top repositories.
+## Repository Highlights
+Key observations from their top repositories.
 
-## 📈 Growth Trajectory
-What the data suggests about their growth and trajectory.
+## Profile Assessment
+Technical summary and domain fit.
 
-## 💼 Ideal Fit
-What types of projects or companies they would be a great fit for.
-
-Keep it insightful, data-driven, and under 600 words.`;
+Keep it concise, technical, and data-driven.`;
 
     const stream = await groq.chat.completions.create({
       model: 'llama-3.1-8b-instant',
