@@ -56,7 +56,6 @@ export default function AISummary({ user, repos }: AISummaryProps) {
     }
   };
 
-  // Render markdown-ish content with simple formatting
   const renderContent = (text: string) => {
     const lines = text.split('\n');
     return lines.map((line, i) => {

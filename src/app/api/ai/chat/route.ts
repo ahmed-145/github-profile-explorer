@@ -24,20 +24,26 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      repoContext,
-      messages,
-      userMessage,
-    }: { repoContext: RepoContext; messages: ChatMessage[]; userMessage: string } = await req.json();
+    const body = await req.json();
+    const repoContext: RepoContext = body.repoContext;
+    const messages: ChatMessage[] = body.messages;
+    const userMessage: string = body.userMessage;
 
-    const fileTree = repoContext.contents
-      .map((f) => `${f.type === 'dir' ? '📁' : '📄'} ${f.name}`)
-      .join('\n');
+    const fileLines = repoContext.contents.map((f) => {
+      const icon = f.type === 'dir' ? '📁' : '📄';
+      return `${icon} ${f.name}`;
+    });
+    const fileTree = fileLines.join('\n');
 
-    const recentCommits = repoContext.commits
-      .slice(0, 10)
-      .map((c) => `- [${c.sha.slice(0, 7)}] ${c.message.split('\n')[0]} (by ${c.author}, ${new Date(c.date).toLocaleDateString()})`)
-      .join('\n');
+    const commitLines = repoContext.commits.slice(0, 10).map((c) => {
+      const shortSha = c.sha.slice(0, 7);
+      const firstLine = c.message.split('\n')[0];
+      const date = new Date(c.date).toLocaleDateString();
+      return `- [${shortSha}] ${firstLine} (by ${c.author}, ${date})`;
+    });
+    const recentCommits = commitLines.join('\n');
+
+    const readmeText = repoContext.readme ? repoContext.readme.slice(0, 6000) : 'No README available';
 
     const systemPrompt = `You are an expert code analyst assistant helping users understand the GitHub repository **${repoContext.owner}/${repoContext.repo}**.
 
@@ -50,7 +56,7 @@ You MUST ground ALL your answers in the actual repository data provided below. D
 - **Stars**: ${repoContext.stars} | **Forks**: ${repoContext.forks}
 
 ## README (first 6000 chars)
-${repoContext.readme?.slice(0, 6000) ?? 'No README available'}
+${readmeText}
 
 ## Root File Structure
 ${fileTree || 'No file structure available'}
@@ -61,8 +67,7 @@ ${recentCommits || 'No commit data available'}
 ---
 Answer the user's questions about this specific repository based on the above data. Be specific and cite actual files, commits, or README sections when relevant. Use markdown for formatting.`;
 
-    // Build conversation history (last 10 messages for context)
-    const historyMessages = messages.slice(-10).map((m) => ({
+    const history = messages.slice(-10).map((m) => ({
       role: m.role as 'user' | 'assistant',
       content: m.content,
     }));
@@ -71,22 +76,23 @@ Answer the user's questions about this specific repository based on the above da
       model: 'llama-3.1-8b-instant',
       messages: [
         { role: 'system', content: systemPrompt },
-        ...historyMessages,
+        ...history,
         { role: 'user', content: userMessage },
       ],
       stream: true,
       max_tokens: 1024,
-      temperature: 0.3, // Lower temperature for grounded factual answers
+      temperature: 0.3,
     });
 
     const encoder = new TextEncoder();
+
     const readable = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
-            const delta = chunk.choices[0]?.delta?.content ?? '';
-            if (delta) {
-              controller.enqueue(encoder.encode(delta));
+            const text = chunk.choices[0]?.delta?.content ?? '';
+            if (text) {
+              controller.enqueue(encoder.encode(text));
             }
           }
         } finally {

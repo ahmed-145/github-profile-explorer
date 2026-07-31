@@ -8,20 +8,24 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { user, repos }: { user: GitHubUser; repos: GitHubRepo[] } = await req.json();
+    const body = await req.json();
+    const user: GitHubUser = body.user;
+    const repos: GitHubRepo[] = body.repos;
 
     const metrics = computeUserMetrics(user, repos);
-    const topRepos = [...repos]
-      .sort((a, b) => b.stargazers_count - a.stargazers_count)
-      .slice(0, 5);
 
-    const topLanguages = Object.entries(metrics.languages)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([lang, count]) => `${lang} (${count} repos)`)
-      .join(', ');
+    const sortedRepos = [...repos].sort((a, b) => b.stargazers_count - a.stargazers_count);
+    const topRepos = sortedRepos.slice(0, 5);
+
+    const langEntries = Object.entries(metrics.languages).sort((a, b) => b[1] - a[1]);
+    const topFiveLangs = langEntries.slice(0, 5);
+    const topLanguages = topFiveLangs.map(([lang, count]) => `${lang} (${count} repos)`).join(', ');
 
     const systemPrompt = `You are an expert developer analyst. Analyze GitHub profiles and provide insightful, engaging, and accurate developer profiles. Be specific, use the actual data provided, and avoid generic statements. Use markdown formatting with headers and bullet points.`;
+
+    const repoList = topRepos
+      .map((r) => `- **${r.name}** (⭐${r.stargazers_count}, 🍴${r.forks_count}) — ${r.description ?? 'No description'} [${r.language ?? 'Unknown'}]`)
+      .join('\n');
 
     const userPrompt = `Analyze this GitHub developer profile and provide a comprehensive summary:
 
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
 **Average Stars per Repo**: ${metrics.avgStarsPerRepo}
 
 **Top Repositories**:
-${topRepos.map((r) => `- **${r.name}** (⭐${r.stargazers_count}, 🍴${r.forks_count}) — ${r.description ?? 'No description'} [${r.language ?? 'Unknown'}]`).join('\n')}
+${repoList}
 
 Please provide:
 ## 🎯 Developer Archetype
@@ -73,13 +77,14 @@ Keep it insightful, data-driven, and under 600 words.`;
     });
 
     const encoder = new TextEncoder();
+
     const readable = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
-            const delta = chunk.choices[0]?.delta?.content ?? '';
-            if (delta) {
-              controller.enqueue(encoder.encode(delta));
+            const text = chunk.choices[0]?.delta?.content ?? '';
+            if (text) {
+              controller.enqueue(encoder.encode(text));
             }
           }
         } finally {

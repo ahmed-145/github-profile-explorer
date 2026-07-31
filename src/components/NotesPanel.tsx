@@ -14,10 +14,10 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 
 interface NotesPanelProps {
-  target?: string;          // if provided, shows notes for this target only
-  targetType?: NoteTarget;  // 'user' | 'repo'
-  targetDisplay?: string;   // human label for note creation
-  showAll?: boolean;        // show all notes (for homepage)
+  target?: string;
+  targetType?: NoteTarget;
+  targetDisplay?: string;
+  showAll?: boolean;
 }
 
 export default function NotesPanel({

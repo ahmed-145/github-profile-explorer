@@ -38,7 +38,7 @@ function saveChatHistory(owner: string, repo: string, messages: ChatMessage[]) {
   try {
     localStorage.setItem(
       `${STORAGE_PREFIX}${owner}-${repo}`,
-      JSON.stringify(messages.slice(-50)) // Keep last 50 messages
+      JSON.stringify(messages.slice(-50))
     );
   } catch {}
 }
@@ -51,13 +51,11 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load history from localStorage on mount
   useEffect(() => {
     const history = loadChatHistory(owner, repo);
     setMessages(history);
   }, [owner, repo]);
 
-  // Auto-scroll on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -76,7 +74,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
     setMessages(newMessages);
     setStreaming(true);
 
-    // Add empty assistant message to stream into
     const streamingMessages: ChatMessage[] = [
       ...newMessages,
       { role: 'assistant', content: '' },
@@ -123,7 +120,7 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Chat failed';
       setError(message);
-      setMessages(newMessages); // Revert to before assistant message
+      setMessages(newMessages);
     } finally {
       setStreaming(false);
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -151,7 +148,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
 
   return (
     <div className="glass rounded-2xl flex flex-col overflow-hidden" style={{ height: '600px' }}>
-      {/* Header */}
       <div className="px-5 py-4 border-b border-space-700/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-blue flex items-center justify-center">
@@ -176,7 +172,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
         )}
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center gap-4">
@@ -210,7 +205,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
               key={i}
               className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
             >
-              {/* Avatar */}
               <div
                 className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-white ${
                   msg.role === 'assistant'
@@ -221,7 +215,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
                 {msg.role === 'assistant' ? <Bot size={14} /> : <User size={14} />}
               </div>
 
-              {/* Bubble */}
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   msg.role === 'user'
@@ -253,7 +246,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Error */}
       {error && (
         <div className="px-4 py-2 bg-red-500/10 border-t border-red-500/20 flex items-center gap-2 text-red-400 text-xs">
           <AlertCircle size={14} />
@@ -261,7 +253,6 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
         </div>
       )}
 
-      {/* Input */}
       <div className="px-4 py-3 border-t border-space-700/50 flex items-center gap-3">
         <input
           ref={inputRef}

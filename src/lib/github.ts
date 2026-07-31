@@ -1,5 +1,3 @@
-// GitHub API type definitions and client helpers
-
 export interface GitHubUser {
   login: string;
   id: number;
@@ -64,19 +62,22 @@ export interface GitHubContent {
 
 const BASE_URL = 'https://api.github.com';
 
-function getHeaders(): HeadersInit {
+function getHeaders() {
   const token = process.env.GITHUB_TOKEN;
-  return {
+  const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
     'User-Agent': 'GitExplorer/1.0',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
 }
 
 export async function fetchGitHubUser(username: string): Promise<GitHubUser> {
   const res = await fetch(`${BASE_URL}/users/${username}`, {
     headers: getHeaders(),
-    next: { revalidate: 300 }, // Cache for 5 min
+    next: { revalidate: 300 },
   });
 
   if (!res.ok) {
@@ -85,7 +86,8 @@ export async function fetchGitHubUser(username: string): Promise<GitHubUser> {
     throw new Error(`GitHub API error: ${res.status}`);
   }
 
-  return res.json();
+  const data = await res.json();
+  return data;
 }
 
 export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> {
@@ -94,13 +96,11 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
   const perPage = 100;
 
   while (true) {
-    const res = await fetch(
-      `${BASE_URL}/users/${username}/repos?per_page=${perPage}&page=${page}&sort=updated`,
-      {
-        headers: getHeaders(),
-        next: { revalidate: 300 },
-      }
-    );
+    const url = `${BASE_URL}/users/${username}/repos?per_page=${perPage}&page=${page}&sort=updated`;
+    const res = await fetch(url, {
+      headers: getHeaders(),
+      next: { revalidate: 300 },
+    });
 
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
 
@@ -109,7 +109,7 @@ export async function fetchGitHubRepos(username: string): Promise<GitHubRepo[]> 
 
     if (repos.length < perPage) break;
     page++;
-    if (page > 10) break; // Safety cap at 1000 repos
+    if (page > 10) break;
   }
 
   return allRepos;
@@ -127,14 +127,15 @@ export async function fetchGitHubRepo(owner: string, repo: string): Promise<GitH
 
 export async function fetchRepoReadme(owner: string, repo: string): Promise<string> {
   try {
+    const headers = { ...getHeaders(), Accept: 'application/vnd.github.raw' };
     const res = await fetch(`${BASE_URL}/repos/${owner}/${repo}/readme`, {
-      headers: { ...getHeaders(), Accept: 'application/vnd.github.raw' },
+      headers,
       next: { revalidate: 600 },
     });
 
     if (!res.ok) return 'No README available.';
+
     const text = await res.text();
-    // Limit to 8000 chars to keep within AI context limits
     return text.slice(0, 8000);
   } catch {
     return 'No README available.';
@@ -169,49 +170,60 @@ export async function fetchRepoContents(owner: string, repo: string): Promise<Gi
   }
 }
 
-// Compute derived metrics for comparison
 export function computeUserMetrics(user: GitHubUser, repos: GitHubRepo[]) {
-  const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
-  const totalForks = repos.reduce((sum, r) => sum + r.forks_count, 0);
-  const languages = repos
-    .filter((r) => r.language)
-    .reduce((acc, r) => {
-      const lang = r.language!;
-      acc[lang] = (acc[lang] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+  let totalStars = 0;
+  let totalForks = 0;
 
-  const topLanguage = Object.entries(languages).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'N/A';
+  for (const repo of repos) {
+    totalStars += repo.stargazers_count;
+    totalForks += repo.forks_count;
+  }
 
-  const accountAge = Math.floor(
-    (Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24 * 365)
-  );
+  const languages: Record<string, number> = {};
+  for (const repo of repos) {
+    if (repo.language) {
+      languages[repo.language] = (languages[repo.language] || 0) + 1;
+    }
+  }
 
-  const recentlyActiveRepos = repos.filter((r) => {
-    const lastPush = new Date(r.pushed_at);
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    return lastPush > sixMonthsAgo;
-  }).length;
+  const langEntries = Object.entries(languages).sort((a, b) => b[1] - a[1]);
+  const topLanguage = langEntries[0] ? langEntries[0][0] : 'N/A';
+
+  const now = Date.now();
+  const createdAt = new Date(user.created_at).getTime();
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const accountAgeDays = Math.floor((now - createdAt) / msPerDay);
+  const accountAgeYears = Math.floor(accountAgeDays / 365);
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  let recentlyActiveRepos = 0;
+  for (const repo of repos) {
+    if (new Date(repo.pushed_at) > sixMonthsAgo) {
+      recentlyActiveRepos++;
+    }
+  }
+
+  const forkedRepos = repos.filter((r) => r.fork).length;
+  const originalRepos = repos.filter((r) => !r.fork).length;
+  const avgStarsPerRepo = repos.length > 0 ? Math.round(totalStars / repos.length) : 0;
 
   return {
     totalStars,
     totalForks,
     topLanguage,
-    accountAgeDays: Math.floor(
-      (Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24)
-    ),
-    accountAgeYears: accountAge,
+    accountAgeDays,
+    accountAgeYears,
     recentlyActiveRepos,
     languageCount: Object.keys(languages).length,
     languages,
-    avgStarsPerRepo: repos.length > 0 ? Math.round(totalStars / repos.length) : 0,
-    forkedRepos: repos.filter((r) => r.fork).length,
-    originalRepos: repos.filter((r) => !r.fork).length,
+    avgStarsPerRepo,
+    forkedRepos,
+    originalRepos,
   };
 }
 
-// Language color map
 export const LANGUAGE_COLORS: Record<string, string> = {
   TypeScript: '#3178c6',
   JavaScript: '#f7df1e',

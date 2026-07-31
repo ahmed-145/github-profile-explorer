@@ -89,7 +89,6 @@ export default function ComparePage() {
   const metrics1 = data1 ? computeUserMetrics(data1.user, data1.repos) : null;
   const metrics2 = data2 ? computeUserMetrics(data2.user, data2.repos) : null;
 
-  // Build chart data
   const barData = ready && metrics1 && metrics2 ? [
     { metric: 'Followers', [data1.user.login]: data1.user.followers, [data2.user.login]: data2.user.followers },
     { metric: 'Repos', [data1.user.login]: data1.user.public_repos, [data2.user.login]: data2.user.public_repos },
@@ -98,7 +97,6 @@ export default function ComparePage() {
     { metric: 'Active Repos', [data1.user.login]: metrics1.recentlyActiveRepos, [data2.user.login]: metrics2.recentlyActiveRepos },
   ] : [];
 
-  // Normalize values 0-100 for radar
   const normalize = (val: number, max: number) => max === 0 ? 0 : Math.round((val / max) * 100);
 
   const radarData = ready && metrics1 && metrics2 ? [

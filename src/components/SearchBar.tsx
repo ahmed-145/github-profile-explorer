@@ -100,7 +100,6 @@ export default function SearchBar() {
         </div>
       </form>
 
-      {/* Recent searches dropdown */}
       {showDropdown && (
         <div className="absolute top-full left-0 right-0 mt-2 glass rounded-xl overflow-hidden z-50 shadow-card">
           <div className="px-3 py-2 text-xs text-space-400 font-medium flex items-center gap-1.5">
@@ -123,7 +122,6 @@ export default function SearchBar() {
         </div>
       )}
 
-      {/* Compare hint */}
       <div className="flex items-center justify-center gap-2 mt-3">
         <Users size={14} className="text-space-400" />
         <span className="text-space-400 text-xs">
