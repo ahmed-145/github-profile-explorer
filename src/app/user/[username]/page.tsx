@@ -6,17 +6,9 @@ import RepoCard from '@/components/RepoCard';
 import AISummary from '@/components/AISummary';
 import NotesPanel from '@/components/NotesPanel';
 import { fetchGitHubUser, fetchGitHubRepos, GitHubRepo } from '@/lib/github';
-import {
-  Search,
-  SortAsc,
-  Filter,
-  Star,
-  GitFork,
-  Clock,
-  ArrowLeft,
-} from 'lucide-react';
 import Link from 'next/link';
 import RepoFilters from '@/components/RepoFilters';
+import { ArrowLeft } from 'lucide-react';
 
 interface PageProps {
   params: { username: string };
@@ -43,7 +35,7 @@ export default async function UserPage({ params }: PageProps) {
       fetchGitHubRepos(params.username),
     ]);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : '';
+    const message = err instanceof Error ? err.message.toLowerCase() : '';
     if (message.includes('not found')) notFound();
     throw err;
   }
@@ -62,7 +54,6 @@ export default async function UserPage({ params }: PageProps) {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left column */}
           <div className="lg:col-span-1 space-y-5">
             <UserCard user={user} repos={repos} />
             <AISummary user={user} repos={repos} />
@@ -73,7 +64,6 @@ export default async function UserPage({ params }: PageProps) {
             />
           </div>
 
-          {/* Right column — repos */}
           <div className="lg:col-span-2 space-y-5">
             <RepoFilters username={params.username} repos={repos} />
           </div>
