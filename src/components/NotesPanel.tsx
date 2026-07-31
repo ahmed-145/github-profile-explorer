@@ -73,44 +73,34 @@ export default function NotesPanel({
   const noteTypeLabel = targetType === 'repo' ? 'repo' : 'profile';
 
   return (
-    <div className="glass rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-space-700/50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-orange to-accent-pink flex items-center justify-center">
-            <StickyNote size={16} className="text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-space-100 text-sm">
-              {showAll ? 'All Notes' : `Notes`}
-            </h3>
-            <p className="text-xs text-space-400">
-              {showAll
-                ? `${notes.length} saved note${notes.length !== 1 ? 's' : ''}`
-                : `Notes about this ${noteTypeLabel}`}
-            </p>
-          </div>
+    <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+      <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <StickyNote size={15} className="text-zinc-400" />
+          <h3 className="font-medium text-white text-sm">
+            {showAll ? 'Saved Notes' : 'Notes'}
+          </h3>
         </div>
         {target && !adding && (
           <button
             onClick={() => setAdding(true)}
             id="add-note-btn"
-            className="flex items-center gap-1.5 text-xs btn-secondary px-3 py-1.5"
+            className="flex items-center gap-1 text-xs bg-zinc-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded hover:text-white transition-colors"
           >
-            <Plus size={13} />
+            <Plus size={12} />
             Add Note
           </button>
         )}
       </div>
 
       <div className="p-4 space-y-3">
-        {/* Add note form */}
         {adding && target && (
-          <div className="bg-space-800/60 rounded-xl p-3 border border-accent-orange/20">
+          <div className="bg-zinc-950 rounded border border-zinc-800 p-3">
             <textarea
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              placeholder={`Add a note about this ${noteTypeLabel}...`}
-              className="input-field resize-none text-sm"
+              placeholder={`Note about this ${noteTypeLabel}...`}
+              className="w-full bg-transparent text-white placeholder-zinc-500 text-xs outline-none resize-none"
               rows={3}
               autoFocus
               id="note-textarea"
@@ -118,59 +108,38 @@ export default function NotesPanel({
             <div className="flex gap-2 mt-2 justify-end">
               <button
                 onClick={() => { setAdding(false); setNewContent(''); }}
-                className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1"
+                className="text-xs text-zinc-400 hover:text-white px-2 py-1"
               >
-                <X size={12} />
                 Cancel
               </button>
               <button
                 onClick={handleAdd}
                 disabled={!newContent.trim()}
                 id="save-note-btn"
-                className="btn-primary text-xs px-3 py-1.5 flex items-center gap-1 relative z-10 disabled:opacity-40"
+                className="bg-white text-black text-xs font-medium px-3 py-1 rounded disabled:opacity-40"
               >
-                <Check size={12} />
                 Save
               </button>
             </div>
           </div>
         )}
 
-        {/* Notes list */}
         {notes.length === 0 && !adding ? (
-          <div className="text-center py-6">
-            <StickyNote className="mx-auto text-space-600 mb-2" size={28} />
-            <p className="text-space-400 text-sm">
-              {showAll ? 'No notes saved yet' : `No notes for this ${noteTypeLabel} yet`}
+          <div className="text-center py-4">
+            <p className="text-zinc-500 text-xs">
+              {showAll ? 'No notes saved yet' : `No notes for this ${noteTypeLabel}`}
             </p>
-            {target && (
-              <button
-                onClick={() => setAdding(true)}
-                className="text-accent-purple text-xs mt-2 hover:underline"
-              >
-                Add your first note
-              </button>
-            )}
           </div>
         ) : (
           notes.map((note) => (
             <div
               key={note.id}
-              className="bg-space-800/40 rounded-xl p-3.5 border border-space-700/40 group hover:border-space-600/60 transition-colors"
+              className="bg-zinc-950 border border-zinc-800 rounded p-3 text-xs group"
             >
-              {/* Note header */}
               {showAll && (
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      note.type === 'repo'
-                        ? 'bg-accent-blue/10 text-accent-blue border border-accent-blue/20'
-                        : 'bg-accent-purple/10 text-accent-purple border border-accent-purple/20'
-                    }`}
-                  >
-                    {note.type}
-                  </span>
-                  <span className="text-xs text-space-400 font-mono">{note.targetDisplay}</span>
+                <div className="flex items-center gap-2 mb-1.5 text-zinc-500 font-mono">
+                  <span>[{note.type}]</span>
+                  <span>{note.targetDisplay}</span>
                 </div>
               )}
 
@@ -179,50 +148,42 @@ export default function NotesPanel({
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="input-field resize-none text-sm"
+                    className="w-full bg-transparent text-white text-xs outline-none resize-none border border-zinc-700 rounded p-1.5"
                     rows={3}
                     autoFocus
                   />
                   <div className="flex gap-2 mt-2 justify-end">
                     <button
                       onClick={() => setEditingId(null)}
-                      className="btn-secondary text-xs px-3 py-1 flex items-center gap-1"
+                      className="text-xs text-zinc-400 hover:text-white px-2 py-1"
                     >
-                      <X size={11} />
                       Cancel
                     </button>
                     <button
                       onClick={() => handleUpdate(note.id)}
-                      className="btn-primary text-xs px-3 py-1 flex items-center gap-1 relative z-10"
+                      className="bg-white text-black text-xs font-medium px-3 py-1 rounded"
                     >
-                      <Check size={11} />
                       Save
                     </button>
                   </div>
                 </div>
               ) : (
                 <>
-                  <p className="text-space-300 text-sm leading-relaxed whitespace-pre-wrap">
-                    {note.content}
-                  </p>
-                  <div className="flex items-center justify-between mt-2.5">
-                    <span className="text-xs text-space-500">
-                      {formatDistanceToNow(new Date(note.updatedAt), { addSuffix: true })}
-                    </span>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap">{note.content}</p>
+                  <div className="flex items-center justify-between mt-2 pt-1 border-t border-zinc-800/60 text-zinc-500">
+                    <span>{formatDistanceToNow(new Date(note.updatedAt), { addSuffix: true })}</span>
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => startEdit(note)}
-                        className="p-1.5 rounded-lg hover:bg-space-700 text-space-400 hover:text-space-200 transition-colors"
-                        aria-label="Edit note"
+                        className="hover:text-white transition-colors"
                       >
-                        <Edit3 size={13} />
+                        <Edit3 size={12} />
                       </button>
                       <button
                         onClick={() => handleDelete(note.id)}
-                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-space-400 hover:text-red-400 transition-colors"
-                        aria-label="Delete note"
+                        className="hover:text-red-400 transition-colors"
                       >
-                        <Trash2 size={13} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </div>

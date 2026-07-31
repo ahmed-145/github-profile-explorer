@@ -33,189 +33,156 @@ export default function UserCard({ user, repos, compact = false }: UserCardProps
 
   if (compact) {
     return (
-      <div className="glass rounded-xl p-4 flex items-center gap-4">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex items-center gap-3">
         <Image
           src={user.avatar_url}
           alt={user.login}
-          width={48}
-          height={48}
-          className="rounded-full border-2 border-accent-purple/30"
+          width={40}
+          height={40}
+          className="rounded-full border border-zinc-700"
         />
         <div className="flex-1 min-w-0">
           <Link
             href={`/user/${user.login}`}
-            className="font-semibold text-space-100 hover:text-accent-purple transition-colors truncate block"
+            className="font-medium text-white hover:underline text-sm truncate block"
           >
             {user.name ?? user.login}
           </Link>
-          <p className="text-space-400 text-sm truncate">@{user.login}</p>
+          <p className="text-zinc-500 text-xs truncate">@{user.login}</p>
         </div>
-        <div className="flex gap-3 text-xs text-space-300 shrink-0">
-          <span className="flex items-center gap-1">
-            <Users size={12} className="text-accent-purple" />
-            {user.followers.toLocaleString()}
-          </span>
-          <span className="flex items-center gap-1">
-            <BookOpen size={12} className="text-accent-blue" />
-            {user.public_repos}
-          </span>
+        <div className="flex gap-3 text-xs text-zinc-400 shrink-0">
+          <span>{user.followers} followers</span>
+          <span>{user.public_repos} repos</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="glass rounded-2xl overflow-hidden">
-      {/* Header gradient */}
-      <div className="h-24 bg-gradient-to-r from-accent-purple/20 via-accent-blue/20 to-accent-cyan/20 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-space-800/80" />
-      </div>
-
-      <div className="px-6 pb-6 -mt-12 relative">
-        {/* Avatar */}
-        <div className="flex items-end justify-between mb-4">
-          <div className="relative">
-            <Image
-              src={user.avatar_url}
-              alt={user.name ?? user.login}
-              width={80}
-              height={80}
-              className="rounded-full border-4 border-space-800 shadow-glow-purple"
-            />
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-accent-green rounded-full border-2 border-space-800" />
-          </div>
-          <div className="flex gap-2 mb-2">
-            <a
-              href={user.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1"
-            >
-              <LinkIcon size={12} />
-              GitHub
-            </a>
-            <Link
-              href={`/compare?user1=${user.login}`}
-              className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1"
-            >
-              <Users size={12} />
-              Compare
-            </Link>
-          </div>
-        </div>
-
-        {/* Name & bio */}
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-space-100">{user.name ?? user.login}</h2>
-          <p className="text-space-400 text-sm font-mono">@{user.login}</p>
-          {user.bio && <p className="text-space-300 text-sm mt-2 leading-relaxed">{user.bio}</p>}
-        </div>
-
-        {/* Meta info */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-5 text-sm text-space-300">
-          {user.company && (
-            <span className="flex items-center gap-1.5">
-              <Building2 size={14} className="text-space-400" />
-              {user.company}
-            </span>
-          )}
-          {user.location && (
-            <span className="flex items-center gap-1.5">
-              <MapPin size={14} className="text-space-400" />
-              {user.location}
-            </span>
-          )}
-          {user.blog && (
-            <a
-              href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-accent-purple transition-colors"
-            >
-              <LinkIcon size={14} className="text-space-400" />
-              {user.blog.replace(/^https?:\/\//, '')}
-            </a>
-          )}
-          {user.twitter_username && (
-            <a
-              href={`https://twitter.com/${user.twitter_username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-accent-blue transition-colors"
-            >
-              <Twitter size={14} className="text-space-400" />@{user.twitter_username}
-            </a>
-          )}
-          <span className="flex items-center gap-1.5">
-            <Calendar size={14} className="text-space-400" />
-            Joined {format(new Date(user.created_at), 'MMM yyyy')}
-          </span>
-        </div>
-
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-          {[
-            { label: 'Followers', value: user.followers.toLocaleString(), icon: Users, color: 'text-accent-purple' },
-            { label: 'Following', value: user.following.toLocaleString(), icon: Users, color: 'text-accent-blue' },
-            { label: 'Repos', value: user.public_repos.toLocaleString(), icon: BookOpen, color: 'text-accent-cyan' },
-            { label: 'Total Stars', value: metrics.totalStars.toLocaleString(), icon: Star, color: 'text-yellow-400' },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="stat-card">
-              <Icon size={16} className={color} />
-              <span className="text-lg font-bold text-space-100">{value}</span>
-              <span className="text-xs text-space-400">{label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Additional metrics */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          {[
-            { label: 'Total Forks', value: metrics.totalForks.toLocaleString(), icon: GitFork },
-            { label: 'Languages', value: metrics.languageCount.toString() },
-            { label: 'Active Repos', value: metrics.recentlyActiveRepos.toString() },
-          ].map(({ label, value }) => (
-            <div key={label} className="text-center">
-              <p className="text-base font-semibold text-space-200">{value}</p>
-              <p className="text-xs text-space-500">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Language breakdown */}
-        {topLangs.length > 0 && (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-4">
+          <Image
+            src={user.avatar_url}
+            alt={user.name ?? user.login}
+            width={64}
+            height={64}
+            className="rounded-full border border-zinc-700"
+          />
           <div>
-            <p className="text-xs font-medium text-space-400 mb-2">Top Languages</p>
-            <div className="flex h-2 rounded-full overflow-hidden gap-0.5 mb-2">
-              {topLangs.map(([lang, count]) => {
-                const pct = (count / totalLangCount) * 100;
-                return (
-                  <div
-                    key={lang}
-                    style={{
-                      width: `${pct}%`,
-                      backgroundColor: getLanguageColor(lang),
-                    }}
-                    title={`${lang}: ${count} repos`}
-                    className="transition-all"
-                  />
-                );
-              })}
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {topLangs.map(([lang, count]) => (
-                <span key={lang} className="flex items-center gap-1.5 text-xs text-space-300">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: getLanguageColor(lang) }}
-                  />
-                  {lang} ({count})
-                </span>
-              ))}
-            </div>
+            <h2 className="text-lg font-bold text-white">{user.name ?? user.login}</h2>
+            <p className="text-zinc-400 text-sm font-mono">@{user.login}</p>
           </div>
-        )}
+        </div>
+
+        <div className="flex gap-2">
+          <a
+            href={user.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded hover:text-white transition-colors flex items-center gap-1"
+          >
+            <LinkIcon size={12} />
+            GitHub
+          </a>
+          <Link
+            href={`/compare?user1=${user.login}`}
+            className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded hover:text-white transition-colors flex items-center gap-1"
+          >
+            <Users size={12} />
+            Compare
+          </Link>
+        </div>
       </div>
+
+      {user.bio && <p className="text-zinc-300 text-sm mb-4 leading-relaxed">{user.bio}</p>}
+
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-5 text-xs text-zinc-400">
+        {user.company && (
+          <span className="flex items-center gap-1">
+            <Building2 size={13} />
+            {user.company}
+          </span>
+        )}
+        {user.location && (
+          <span className="flex items-center gap-1">
+            <MapPin size={13} />
+            {user.location}
+          </span>
+        )}
+        {user.blog && (
+          <a
+            href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 hover:text-white transition-colors"
+          >
+            <LinkIcon size={13} />
+            {user.blog.replace(/^https?:\/\//, '')}
+          </a>
+        )}
+        {user.twitter_username && (
+          <a
+            href={`https://twitter.com/${user.twitter_username}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 hover:text-white transition-colors"
+          >
+            <Twitter size={13} />@{user.twitter_username}
+          </a>
+        )}
+        <span className="flex items-center gap-1">
+          <Calendar size={13} />
+          Joined {format(new Date(user.created_at), 'MMM yyyy')}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+        {[
+          { label: 'Followers', value: user.followers.toLocaleString(), icon: Users },
+          { label: 'Following', value: user.following.toLocaleString(), icon: Users },
+          { label: 'Repos', value: user.public_repos.toLocaleString(), icon: BookOpen },
+          { label: 'Total Stars', value: metrics.totalStars.toLocaleString(), icon: Star },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="bg-zinc-950 border border-zinc-800 rounded p-3 text-center">
+            <Icon size={14} className="mx-auto text-zinc-500 mb-1" />
+            <span className="text-base font-semibold text-white block">{value}</span>
+            <span className="text-xs text-zinc-500">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {topLangs.length > 0 && (
+        <div>
+          <p className="text-xs text-zinc-400 mb-2">Languages</p>
+          <div className="flex h-1.5 rounded-full overflow-hidden gap-0.5 mb-2 bg-zinc-800">
+            {topLangs.map(([lang, count]) => {
+              const pct = (count / totalLangCount) * 100;
+              return (
+                <div
+                  key={lang}
+                  style={{
+                    width: `${pct}%`,
+                    backgroundColor: getLanguageColor(lang),
+                  }}
+                  title={`${lang}: ${count} repos`}
+                />
+              );
+            })}
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {topLangs.map(([lang, count]) => (
+              <span key={lang} className="flex items-center gap-1 text-xs text-zinc-400">
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: getLanguageColor(lang) }}
+                />
+                {lang} ({count})
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -227,21 +194,12 @@ function getLanguageColor(lang: string): string {
     Python: '#3572A5',
     Java: '#b07219',
     'C++': '#f34b7d',
-    C: '#555555',
     Go: '#00ADD8',
     Rust: '#dea584',
     Ruby: '#701516',
     PHP: '#4F5D95',
-    Swift: '#F05138',
-    Kotlin: '#A97BFF',
-    Dart: '#00B4AB',
     HTML: '#e34c26',
     CSS: '#563d7c',
-    Shell: '#89e051',
-    Vue: '#41b883',
-    Svelte: '#ff3e00',
-    'C#': '#178600',
-    R: '#198CE7',
   };
-  return colors[lang] ?? '#8b949e';
+  return colors[lang] ?? '#71717a';
 }

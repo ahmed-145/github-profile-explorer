@@ -56,21 +56,10 @@ export default function SearchBar() {
   const showDropdown = focused && recent.length > 0 && !loading;
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
+    <div className="relative w-full max-w-xl mx-auto">
       <form onSubmit={handleSubmit}>
-        <div
-          className={`flex items-center gap-3 glass rounded-xl px-4 py-3 transition-all duration-300 ${
-            focused
-              ? 'border-accent-purple/60 shadow-glow-purple'
-              : 'border-space-600/60'
-          }`}
-        >
-          <Search
-            className={`shrink-0 transition-colors duration-200 ${
-              focused ? 'text-accent-purple' : 'text-space-400'
-            }`}
-            size={20}
-          />
+        <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 transition-colors focus-within:border-zinc-600">
+          <Search size={16} className="text-zinc-500 shrink-0" />
           <input
             ref={inputRef}
             id="github-username-search"
@@ -80,19 +69,19 @@ export default function SearchBar() {
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             onKeyDown={handleKeyDown}
-            placeholder="Enter a GitHub username (e.g. octocat)"
-            className="flex-1 bg-transparent text-space-100 placeholder-space-400 outline-none text-base"
+            placeholder="Search GitHub username..."
+            className="flex-1 bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
             autoComplete="off"
             spellCheck={false}
           />
           {loading ? (
-            <Loader2 className="shrink-0 text-accent-purple animate-spin" size={20} />
+            <Loader2 className="shrink-0 text-zinc-400 animate-spin" size={16} />
           ) : (
             <button
               type="submit"
               disabled={!query.trim()}
               id="search-submit-btn"
-              className="btn-primary text-sm px-4 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed relative z-10"
+              className="bg-white text-black text-xs font-medium px-3 py-1.5 rounded disabled:opacity-40"
             >
               Search
             </button>
@@ -101,8 +90,8 @@ export default function SearchBar() {
       </form>
 
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-2 glass rounded-xl overflow-hidden z-50 shadow-card">
-          <div className="px-3 py-2 text-xs text-space-400 font-medium flex items-center gap-1.5">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden z-50">
+          <div className="px-3 py-1.5 text-xs text-zinc-500 font-medium flex items-center gap-1">
             <Clock size={12} />
             Recent searches
           </div>
@@ -113,22 +102,22 @@ export default function SearchBar() {
                 setQuery(username);
                 handleSearch(username);
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-space-700/50 transition-colors text-left"
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-zinc-800 transition-colors text-left text-xs text-zinc-300"
             >
-              <GitBranch size={14} className="text-space-400 shrink-0" />
-              <span className="text-space-200 text-sm">{username}</span>
+              <GitBranch size={13} className="text-zinc-500 shrink-0" />
+              <span>{username}</span>
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-2 mt-3">
-        <Users size={14} className="text-space-400" />
-        <span className="text-space-400 text-xs">
-          Want to compare two users?{' '}
+      <div className="flex items-center justify-center gap-1 mt-2 text-xs text-zinc-500">
+        <Users size={12} />
+        <span>
+          Comparing users?{' '}
           <button
             onClick={() => router.push('/compare')}
-            className="text-accent-purple hover:text-accent-blue transition-colors underline underline-offset-2"
+            className="text-zinc-300 hover:text-white underline underline-offset-2"
           >
             Go to Compare
           </button>

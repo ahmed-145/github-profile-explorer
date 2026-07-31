@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import UserCard from '@/components/UserCard';
 import {
@@ -28,7 +28,6 @@ import {
   Search,
   Loader2,
   Trophy,
-  ArrowRight,
 } from 'lucide-react';
 
 interface CompareState {
@@ -38,7 +37,6 @@ interface CompareState {
 
 export default function ComparePage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const [user1Input, setUser1Input] = useState(searchParams.get('user1') ?? '');
   const [user2Input, setUser2Input] = useState(searchParams.get('user2') ?? '');
@@ -142,200 +140,128 @@ export default function ComparePage() {
   };
 
   const comparisonRows: MetricRow[] = ready && metrics1 && metrics2 ? [
-    { label: 'Followers', icon: <Users size={14} />, v1: data1.user.followers.toLocaleString(), v2: data2.user.followers.toLocaleString(), raw1: data1.user.followers, raw2: data2.user.followers },
-    { label: 'Public Repos', icon: <BookOpen size={14} />, v1: data1.user.public_repos, v2: data2.user.public_repos, raw1: data1.user.public_repos, raw2: data2.user.public_repos },
-    { label: 'Total Stars', icon: <Star size={14} />, v1: metrics1.totalStars.toLocaleString(), v2: metrics2.totalStars.toLocaleString(), raw1: metrics1.totalStars, raw2: metrics2.totalStars },
-    { label: 'Total Forks', icon: <GitFork size={14} />, v1: metrics1.totalForks.toLocaleString(), v2: metrics2.totalForks.toLocaleString(), raw1: metrics1.totalForks, raw2: metrics2.totalForks },
-    { label: 'Languages', icon: <Zap size={14} />, v1: metrics1.languageCount, v2: metrics2.languageCount, raw1: metrics1.languageCount, raw2: metrics2.languageCount },
-    { label: 'Active Repos (6mo)', icon: <Calendar size={14} />, v1: metrics1.recentlyActiveRepos, v2: metrics2.recentlyActiveRepos, raw1: metrics1.recentlyActiveRepos, raw2: metrics2.recentlyActiveRepos },
-    { label: 'Avg Stars/Repo', icon: <Star size={14} />, v1: metrics1.avgStarsPerRepo, v2: metrics2.avgStarsPerRepo, raw1: metrics1.avgStarsPerRepo, raw2: metrics2.avgStarsPerRepo },
-    { label: 'Top Language', icon: <Zap size={14} />, v1: metrics1.topLanguage, v2: metrics2.topLanguage, raw1: 0, raw2: 0 },
+    { label: 'Followers', icon: <Users size={13} />, v1: data1.user.followers.toLocaleString(), v2: data2.user.followers.toLocaleString(), raw1: data1.user.followers, raw2: data2.user.followers },
+    { label: 'Public Repos', icon: <BookOpen size={13} />, v1: data1.user.public_repos, v2: data2.user.public_repos, raw1: data1.user.public_repos, raw2: data2.user.public_repos },
+    { label: 'Total Stars', icon: <Star size={13} />, v1: metrics1.totalStars.toLocaleString(), v2: metrics2.totalStars.toLocaleString(), raw1: metrics1.totalStars, raw2: metrics2.totalStars },
+    { label: 'Total Forks', icon: <GitFork size={13} />, v1: metrics1.totalForks.toLocaleString(), v2: metrics2.totalForks.toLocaleString(), raw1: metrics1.totalForks, raw2: metrics2.totalForks },
+    { label: 'Languages', icon: <Zap size={13} />, v1: metrics1.languageCount, v2: metrics2.languageCount, raw1: metrics1.languageCount, raw2: metrics2.languageCount },
+    { label: 'Active Repos (6mo)', icon: <Calendar size={13} />, v1: metrics1.recentlyActiveRepos, v2: metrics2.recentlyActiveRepos, raw1: metrics1.recentlyActiveRepos, raw2: metrics2.recentlyActiveRepos },
+    { label: 'Avg Stars/Repo', icon: <Star size={13} />, v1: metrics1.avgStarsPerRepo, v2: metrics2.avgStarsPerRepo, raw1: metrics1.avgStarsPerRepo, raw2: metrics2.avgStarsPerRepo },
+    { label: 'Top Language', icon: <Zap size={13} />, v1: metrics1.topLanguage, v2: metrics2.topLanguage, raw1: 0, raw2: 0 },
   ] : [];
 
-  const PURPLE = '#a78bfa';
-  const BLUE = '#60a5fa';
+  const WHITE = '#ffffff';
+  const ZINC = '#71717a';
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black text-zinc-100">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-bold text-space-100 mb-1">Compare Developers</h1>
-        <p className="text-space-400 text-sm mb-8">
-          Side-by-side comparison of two GitHub profiles
-        </p>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-xl font-bold text-white mb-1">Compare Profiles</h1>
+        <p className="text-zinc-400 text-xs mb-6">Compare metrics for any two GitHub developers.</p>
 
-        {/* Input row */}
-        <div className="glass rounded-xl p-5 mb-8">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div className="flex-1 relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-400" />
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <div className="flex-1 relative w-full">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 id="compare-user1-input"
                 value={user1Input}
                 onChange={(e) => setUser1Input(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCompare()}
-                placeholder="First GitHub username"
-                className="input-field pl-8 text-sm"
+                placeholder="User 1 username"
+                className="bg-zinc-950 border border-zinc-800 rounded text-xs pl-8 pr-3 py-2 text-white outline-none focus:border-zinc-700 w-full"
               />
             </div>
-            <div className="hidden sm:flex items-center text-space-500 font-bold text-sm">VS</div>
-            <div className="flex-1 relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-400" />
+            <span className="text-zinc-500 font-bold text-xs">VS</span>
+            <div className="flex-1 relative w-full">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 id="compare-user2-input"
                 value={user2Input}
                 onChange={(e) => setUser2Input(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCompare()}
-                placeholder="Second GitHub username"
-                className="input-field pl-8 text-sm"
+                placeholder="User 2 username"
+                className="bg-zinc-950 border border-zinc-800 rounded text-xs pl-8 pr-3 py-2 text-white outline-none focus:border-zinc-700 w-full"
               />
             </div>
             <button
               onClick={handleCompare}
               disabled={!user1Input.trim() || !user2Input.trim() || loading1 || loading2}
               id="compare-btn"
-              className="btn-primary flex items-center gap-2 text-sm px-5 py-3 relative z-10 disabled:opacity-40"
+              className="bg-white text-black text-xs font-medium px-4 py-2 rounded hover:bg-zinc-200 transition-colors disabled:opacity-40 shrink-0 w-full sm:w-auto"
             >
-              {loading1 || loading2 ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <ArrowRight size={16} />
-              )}
-              Compare
+              {loading1 || loading2 ? <Loader2 size={14} className="animate-spin" /> : 'Compare'}
             </button>
           </div>
           {(error1 || error2) && (
-            <div className="mt-3 text-red-400 text-xs flex gap-4">
+            <div className="mt-2 text-red-400 text-xs flex gap-4">
               {error1 && <span>User 1: {error1}</span>}
               {error2 && <span>User 2: {error2}</span>}
             </div>
           )}
         </div>
 
-        {/* Loading skeletons */}
-        {(loading1 || loading2) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {[1, 2].map((i) => (
-              <div key={i} className="glass rounded-2xl p-6 space-y-4">
-                <div className="shimmer-bg rounded-full w-20 h-20" />
-                <div className="shimmer-bg rounded h-5 w-48" />
-                <div className="shimmer-bg rounded h-4 w-32" />
-                <div className="grid grid-cols-2 gap-3">
-                  {[1, 2, 3, 4].map((j) => (
-                    <div key={j} className="shimmer-bg rounded-xl h-16" />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Results */}
         {ready && metrics1 && metrics2 && (
-          <div className="space-y-8">
-            {/* Profile cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <UserCard user={data1!.user} repos={data1!.repos} />
               <UserCard user={data2!.user} repos={data2!.repos} />
             </div>
 
-            {/* Stats table */}
-            <div className="glass rounded-2xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-space-700/50 flex items-center gap-2">
-                <Trophy size={16} className="text-yellow-400" />
-                <h2 className="font-semibold text-space-100 text-sm">Head-to-Head Metrics</h2>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+              <div className="px-4 py-3 border-b border-zinc-800 flex items-center gap-2">
+                <Trophy size={14} className="text-zinc-400" />
+                <h2 className="font-medium text-white text-sm">Metrics Breakdown</h2>
               </div>
-              <div className="divide-y divide-space-700/30">
-                <div className="grid grid-cols-3 px-5 py-2.5 text-xs font-medium text-space-400 bg-space-800/30">
+              <div className="divide-y divide-zinc-800 text-xs">
+                <div className="grid grid-cols-3 px-4 py-2 font-medium text-zinc-500 bg-zinc-950">
                   <span>Metric</span>
-                  <span className="text-center" style={{ color: PURPLE }}>{data1.user.login}</span>
-                  <span className="text-center" style={{ color: BLUE }}>{data2.user.login}</span>
+                  <span className="text-center text-white">{data1.user.login}</span>
+                  <span className="text-center text-white">{data2.user.login}</span>
                 </div>
                 {comparisonRows.map(({ label, icon, v1, v2, raw1, raw2 }) => (
-                  <div key={label} className="grid grid-cols-3 px-5 py-3 hover:bg-space-800/20 transition-colors">
-                    <span className="flex items-center gap-2 text-xs text-space-300">
-                      <span className="text-space-400">{icon}</span>
+                  <div key={label} className="grid grid-cols-3 px-4 py-2.5">
+                    <span className="flex items-center gap-1.5 text-zinc-400">
+                      {icon}
                       {label}
                     </span>
-                    <span className={`text-center text-sm font-semibold ${raw1 > raw2 ? 'text-accent-purple' : raw1 < raw2 ? 'text-space-300' : 'text-space-200'}`}>
+                    <span className={`text-center font-medium ${raw1 > raw2 ? 'text-white font-semibold' : 'text-zinc-400'}`}>
                       {v1}
-                      {raw1 > raw2 && <span className="ml-1 text-xs">🏆</span>}
                     </span>
-                    <span className={`text-center text-sm font-semibold ${raw2 > raw1 ? 'text-accent-blue' : raw2 < raw1 ? 'text-space-300' : 'text-space-200'}`}>
+                    <span className={`text-center font-medium ${raw2 > raw1 ? 'text-white font-semibold' : 'text-zinc-400'}`}>
                       {v2}
-                      {raw2 > raw1 && <span className="ml-1 text-xs">🏆</span>}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Bar chart */}
-              <div className="glass rounded-2xl p-5">
-                <h3 className="font-semibold text-space-100 text-sm mb-4">Metrics Comparison</h3>
-                <ResponsiveContainer width="100%" height={260}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                <h3 className="font-medium text-white text-xs mb-4">Metrics Comparison</h3>
+                <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={barData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
-                    <XAxis
-                      dataKey="metric"
-                      tick={{ fill: '#6e7681', fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis tick={{ fill: '#6e7681', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#161b22',
-                        border: '1px solid #30363d',
-                        borderRadius: 8,
-                        color: '#e6edf3',
-                        fontSize: 12,
-                      }}
-                    />
-                    <Legend
-                      wrapperStyle={{ fontSize: 12, color: '#8b949e' }}
-                    />
-                    <Bar dataKey={data1.user.login} fill={PURPLE} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey={data2.user.login} fill={BLUE} radius={[4, 4, 0, 0]} />
+                    <XAxis dataKey="metric" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: 4, color: '#fff', fontSize: 11 }} />
+                    <Legend wrapperStyle={{ fontSize: 11, color: '#a1a1aa' }} />
+                    <Bar dataKey={data1.user.login} fill={WHITE} radius={[2, 2, 0, 0]} />
+                    <Bar dataKey={data2.user.login} fill={ZINC} radius={[2, 2, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Radar chart */}
-              <div className="glass rounded-2xl p-5">
-                <h3 className="font-semibold text-space-100 text-sm mb-4">Developer Profile Radar</h3>
-                <ResponsiveContainer width="100%" height={260}>
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                <h3 className="font-medium text-white text-xs mb-4">Profile Radar</h3>
+                <ResponsiveContainer width="100%" height={240}>
                   <RadarChart data={radarData}>
-                    <PolarGrid stroke="#30363d" />
-                    <PolarAngleAxis
-                      dataKey="subject"
-                      tick={{ fill: '#6e7681', fontSize: 11 }}
-                    />
-                    <Radar
-                      name={data1.user.login}
-                      dataKey={data1.user.login}
-                      stroke={PURPLE}
-                      fill={PURPLE}
-                      fillOpacity={0.15}
-                    />
-                    <Radar
-                      name={data2.user.login}
-                      dataKey={data2.user.login}
-                      stroke={BLUE}
-                      fill={BLUE}
-                      fillOpacity={0.15}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 12, color: '#8b949e' }} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#161b22',
-                        border: '1px solid #30363d',
-                        borderRadius: 8,
-                        color: '#e6edf3',
-                        fontSize: 12,
-                      }}
-                    />
+                    <PolarGrid stroke="#27272a" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#71717a', fontSize: 10 }} />
+                    <Radar name={data1.user.login} dataKey={data1.user.login} stroke={WHITE} fill={WHITE} fillOpacity={0.15} />
+                    <Radar name={data2.user.login} dataKey={data2.user.login} stroke={ZINC} fill={ZINC} fillOpacity={0.15} />
+                    <Legend wrapperStyle={{ fontSize: 11, color: '#a1a1aa' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: 4, color: '#fff', fontSize: 11 }} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>

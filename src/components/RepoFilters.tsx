@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Star, GitFork, Clock, Filter, SortAsc } from 'lucide-react';
+import { Search, Star, GitFork, Clock, SortAsc } from 'lucide-react';
 import RepoCard from '@/components/RepoCard';
 import { GitHubRepo } from '@/lib/github';
 
@@ -59,37 +59,34 @@ export default function RepoFilters({ username, repos }: RepoFiltersProps) {
   }, [repos, search, sort, langFilter, showForked]);
 
   const sortOptions: { key: SortKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'stars', label: 'Stars', icon: <Star size={13} /> },
-    { key: 'forks', label: 'Forks', icon: <GitFork size={13} /> },
-    { key: 'updated', label: 'Updated', icon: <Clock size={13} /> },
-    { key: 'name', label: 'Name', icon: <SortAsc size={13} /> },
+    { key: 'stars', label: 'Stars', icon: <Star size={12} /> },
+    { key: 'forks', label: 'Forks', icon: <GitFork size={12} /> },
+    { key: 'updated', label: 'Updated', icon: <Clock size={12} /> },
+    { key: 'name', label: 'Name', icon: <SortAsc size={12} /> },
   ];
 
   return (
     <div className="space-y-4">
-      {/* Controls */}
-      <div className="glass rounded-xl p-4 space-y-3">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 space-y-2.5">
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Search */}
-          <div className="flex-1 min-w-48 relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-400" />
+          <div className="flex-1 min-w-44 relative">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input
               id="repo-search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filter repositories..."
-              className="input-field text-sm pl-8 py-2"
+              placeholder="Filter repos..."
+              className="bg-zinc-950 border border-zinc-800 rounded text-xs pl-8 pr-3 py-1.5 text-white outline-none focus:border-zinc-700 w-full"
             />
           </div>
 
-          {/* Language filter */}
           {languages.length > 0 && (
             <select
               value={langFilter}
               onChange={(e) => setLangFilter(e.target.value)}
               id="language-filter"
-              className="input-field text-sm py-2 w-auto min-w-32"
+              className="bg-zinc-950 border border-zinc-800 rounded text-xs px-2.5 py-1.5 text-zinc-300 outline-none"
             >
               <option value="">All Languages</option>
               {languages.map((lang) => (
@@ -100,32 +97,27 @@ export default function RepoFilters({ username, repos }: RepoFiltersProps) {
             </select>
           )}
 
-          {/* Fork toggle */}
-          <label className="flex items-center gap-2 text-sm text-space-300 cursor-pointer">
+          <label className="flex items-center gap-1.5 text-xs text-zinc-400 cursor-pointer">
             <input
               type="checkbox"
               checked={showForked}
               onChange={(e) => setShowForked(e.target.checked)}
-              className="rounded"
+              className="rounded bg-zinc-950 border-zinc-800"
             />
-            Show forks
+            Forks
           </label>
         </div>
 
-        {/* Sort buttons */}
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-xs text-space-400 mr-1 flex items-center gap-1">
-            <Filter size={12} />
-            Sort:
-          </span>
+        <div className="flex items-center gap-1 flex-wrap text-xs text-zinc-400">
+          <span className="mr-1">Sort:</span>
           {sortOptions.map(({ key, label, icon }) => (
             <button
               key={key}
               onClick={() => setSort(key)}
-              className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
                 sort === key
-                  ? 'bg-accent-purple/20 text-accent-purple border border-accent-purple/30'
-                  : 'text-space-400 hover:text-space-200 hover:bg-space-700/50 border border-transparent'
+                  ? 'bg-zinc-800 text-white font-medium'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               {icon}
@@ -135,22 +127,18 @@ export default function RepoFilters({ username, repos }: RepoFiltersProps) {
         </div>
       </div>
 
-      {/* Results header */}
-      <div className="flex items-center justify-between">
-        <p className="text-space-400 text-sm">
-          Showing{' '}
-          <span className="text-space-200 font-medium">{filtered.length}</span>{' '}
-          of {repos.length} repositories
-        </p>
+      <div className="flex items-center justify-between text-xs text-zinc-400">
+        <span>
+          Showing <span className="text-white font-medium">{filtered.length}</span> of {repos.length} repositories
+        </span>
       </div>
 
-      {/* Repo grid */}
       {filtered.length === 0 ? (
-        <div className="glass rounded-xl p-10 text-center">
-          <p className="text-space-400 text-sm">No repositories match your filters</p>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center text-xs text-zinc-500">
+          No repositories found
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((repo) => (
             <RepoCard key={repo.id} repo={repo} owner={username} />
           ))}

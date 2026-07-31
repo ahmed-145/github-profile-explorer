@@ -143,27 +143,19 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
     'What does this repository do?',
     'What technologies does it use?',
     'How is the project structured?',
-    'What are the recent changes?',
   ];
 
   return (
-    <div className="glass rounded-2xl flex flex-col overflow-hidden" style={{ height: '600px' }}>
-      <div className="px-5 py-4 border-b border-space-700/50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-blue flex items-center justify-center">
-            <Bot size={16} className="text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-space-100 text-sm">Repository Chat</h3>
-            <p className="text-xs text-space-400">
-              Grounded in README, commits & file structure
-            </p>
-          </div>
+    <div className="bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col overflow-hidden" style={{ height: '550px' }}>
+      <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Bot size={15} className="text-zinc-400" />
+          <h3 className="font-medium text-white text-sm">Repository AI Chat</h3>
         </div>
         {messages.length > 0 && (
           <button
             onClick={clearHistory}
-            className="flex items-center gap-1.5 text-xs text-space-400 hover:text-space-200 transition-colors px-2 py-1 rounded-lg hover:bg-space-700/50"
+            className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white transition-colors"
             id="clear-chat-history-btn"
           >
             <RefreshCw size={12} />
@@ -172,19 +164,12 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
         {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-purple/20 to-accent-blue/20 flex items-center justify-center">
-              <MessageSquare size={28} className="text-accent-purple" />
-            </div>
-            <div className="text-center">
-              <p className="text-space-300 text-sm font-medium">Chat about {repo}</p>
-              <p className="text-space-500 text-xs mt-1">
-                Ask anything about this repository
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2 w-full max-w-sm mt-2">
+          <div className="h-full flex flex-col items-center justify-center gap-3 text-center">
+            <MessageSquare size={24} className="text-zinc-600" />
+            <p className="text-zinc-400 font-medium">Ask anything about {repo}</p>
+            <div className="flex flex-wrap justify-center gap-1.5 max-w-sm mt-1">
               {suggestions.map((s) => (
                 <button
                   key={s}
@@ -192,7 +177,7 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
                     setInput(s);
                     setTimeout(() => inputRef.current?.focus(), 50);
                   }}
-                  className="text-xs text-left p-2.5 rounded-lg border border-space-700 hover:border-accent-purple/40 hover:bg-accent-purple/5 text-space-300 transition-all"
+                  className="text-xs bg-zinc-950 border border-zinc-800 hover:border-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded transition-colors"
                 >
                   {s}
                 </button>
@@ -203,39 +188,20 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
           messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+              className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-white ${
-                  msg.role === 'assistant'
-                    ? 'bg-gradient-to-br from-accent-purple to-accent-blue'
-                    : 'bg-gradient-to-br from-accent-cyan to-accent-blue'
-                }`}
-              >
-                {msg.role === 'assistant' ? <Bot size={14} /> : <User size={14} />}
-              </div>
-
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                className={`max-w-[85%] rounded px-3 py-2 leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-accent-purple/10 border border-accent-purple/20 text-space-100 rounded-tr-sm'
-                    : 'bg-space-800/60 border border-space-700/50 text-space-200 rounded-tl-sm'
-                } ${
-                  streaming && i === messages.length - 1 && msg.role === 'assistant' && msg.content === ''
-                    ? 'streaming-cursor'
-                    : ''
+                    ? 'bg-white text-black font-medium'
+                    : 'bg-zinc-950 border border-zinc-800 text-zinc-200'
                 }`}
               >
                 {msg.content ? (
-                  <div className="whitespace-pre-wrap break-words">
-                    {msg.content}
-                    {streaming && i === messages.length - 1 && msg.role === 'assistant' && (
-                      <span className="streaming-cursor" />
-                    )}
-                  </div>
+                  <div className="whitespace-pre-wrap break-words">{msg.content}</div>
                 ) : (
-                  <div className="flex items-center gap-2 text-space-400">
-                    <Loader2 size={14} className="animate-spin" />
+                  <div className="flex items-center gap-1.5 text-zinc-400">
+                    <Loader2 size={12} className="animate-spin" />
                     <span>Thinking...</span>
                   </div>
                 )}
@@ -247,13 +213,13 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
       </div>
 
       {error && (
-        <div className="px-4 py-2 bg-red-500/10 border-t border-red-500/20 flex items-center gap-2 text-red-400 text-xs">
-          <AlertCircle size={14} />
+        <div className="px-3 py-1.5 bg-red-950/30 border-t border-red-900/50 flex items-center gap-2 text-red-400 text-xs">
+          <AlertCircle size={12} />
           {error}
         </div>
       )}
 
-      <div className="px-4 py-3 border-t border-space-700/50 flex items-center gap-3">
+      <div className="p-3 border-t border-zinc-800 flex items-center gap-2">
         <input
           ref={inputRef}
           id="repo-chat-input"
@@ -263,19 +229,15 @@ export default function RepoChat({ owner, repo, repoContext }: RepoChatProps) {
           onKeyDown={handleKeyDown}
           placeholder={`Ask about ${repo}...`}
           disabled={streaming}
-          className="input-field text-sm py-2"
+          className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-zinc-700"
         />
         <button
           onClick={sendMessage}
           disabled={!input.trim() || streaming}
           id="repo-chat-send-btn"
-          className="btn-primary px-3 py-2 flex items-center gap-1.5 text-sm shrink-0 disabled:opacity-40 disabled:cursor-not-allowed relative z-10"
+          className="bg-white text-black text-xs font-medium px-3 py-1.5 rounded disabled:opacity-40"
         >
-          {streaming ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Send size={16} />
-          )}
+          {streaming ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         </button>
       </div>
     </div>

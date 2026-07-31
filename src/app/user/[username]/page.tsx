@@ -1,11 +1,9 @@
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import UserCard from '@/components/UserCard';
-import RepoCard from '@/components/RepoCard';
 import AISummary from '@/components/AISummary';
 import NotesPanel from '@/components/NotesPanel';
-import { fetchGitHubUser, fetchGitHubRepos, GitHubRepo } from '@/lib/github';
+import { fetchGitHubUser, fetchGitHubRepos } from '@/lib/github';
 import Link from 'next/link';
 import RepoFilters from '@/components/RepoFilters';
 import { ArrowLeft } from 'lucide-react';
@@ -41,20 +39,19 @@ export default async function UserPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black text-zinc-100">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back link */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-space-400 hover:text-space-200 text-sm mb-6 transition-colors"
+          className="inline-flex items-center gap-1 text-zinc-400 hover:text-white text-xs mb-4 transition-colors"
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={12} />
           Back to search
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 space-y-5">
+          <div className="lg:col-span-1 space-y-4">
             <UserCard user={user} repos={repos} />
             <AISummary user={user} repos={repos} />
             <NotesPanel
@@ -64,7 +61,7 @@ export default async function UserPage({ params }: PageProps) {
             />
           </div>
 
-          <div className="lg:col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-4">
             <RepoFilters username={params.username} repos={repos} />
           </div>
         </div>
