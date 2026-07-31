@@ -2,12 +2,17 @@ import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
 import { GitHubUser, GitHubRepo, computeUserMetrics } from '@/lib/github';
 
-export const runtime = 'nodejs';
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.GROQ_API_KEY) {
+      return new Response(JSON.stringify({ error: 'GROQ_API_KEY environment variable is not configured.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
     const body = await req.json();
     const user: GitHubUser = body.user;
     const repos: GitHubRepo[] = body.repos;

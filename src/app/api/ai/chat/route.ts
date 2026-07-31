@@ -20,10 +20,17 @@ interface RepoContext {
   contents: Array<{ name: string; type: string }>;
 }
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.GROQ_API_KEY) {
+      return new Response(JSON.stringify({ error: 'GROQ_API_KEY environment variable is not configured.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
     const body = await req.json();
     const repoContext: RepoContext = body.repoContext;
     const messages: ChatMessage[] = body.messages;
