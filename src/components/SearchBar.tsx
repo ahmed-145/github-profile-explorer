@@ -58,8 +58,8 @@ export default function SearchBar() {
   return (
     <div className="relative w-full max-w-xl mx-auto">
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 transition-colors focus-within:border-zinc-600">
-          <Search size={16} className="text-zinc-500 shrink-0" />
+        <div className="flex items-center gap-2 bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 transition-colors focus-within:border-[#58a6ff]">
+          <Search size={16} className="text-[#8b949e] shrink-0" />
           <input
             ref={inputRef}
             id="github-username-search"
@@ -70,18 +70,18 @@ export default function SearchBar() {
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             onKeyDown={handleKeyDown}
             placeholder="Search GitHub username..."
-            className="flex-1 bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
+            className="flex-1 bg-transparent text-[#e6edf3] placeholder-[#8b949e] outline-none text-sm"
             autoComplete="off"
             spellCheck={false}
           />
           {loading ? (
-            <Loader2 className="shrink-0 text-zinc-400 animate-spin" size={16} />
+            <Loader2 className="shrink-0 text-[#58a6ff] animate-spin" size={16} />
           ) : (
             <button
               type="submit"
               disabled={!query.trim()}
               id="search-submit-btn"
-              className="bg-white text-black text-xs font-medium px-3 py-1.5 rounded disabled:opacity-40"
+              className="bg-[#238636] hover:bg-[#2ea043] text-white text-xs font-medium px-3.5 py-1.5 rounded transition-colors disabled:opacity-40"
             >
               Search
             </button>
@@ -90,8 +90,8 @@ export default function SearchBar() {
       </form>
 
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden z-50">
-          <div className="px-3 py-1.5 text-xs text-zinc-500 font-medium flex items-center gap-1">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden z-50">
+          <div className="px-3 py-1.5 text-xs text-[#8b949e] font-medium flex items-center gap-1">
             <Clock size={12} />
             Recent searches
           </div>
@@ -102,22 +102,22 @@ export default function SearchBar() {
                 setQuery(username);
                 handleSearch(username);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-zinc-800 transition-colors text-left text-xs text-zinc-300"
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[#21262d] transition-colors text-left text-xs text-[#c9d1d9]"
             >
-              <GitBranch size={13} className="text-zinc-500 shrink-0" />
+              <GitBranch size={13} className="text-[#8b949e] shrink-0" />
               <span>{username}</span>
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-1 mt-2 text-xs text-zinc-500">
+      <div className="flex items-center justify-center gap-1 mt-2 text-xs text-[#8b949e]">
         <Users size={12} />
         <span>
           Comparing users?{' '}
           <button
             onClick={() => router.push('/compare')}
-            className="text-zinc-300 hover:text-white underline underline-offset-2"
+            className="text-[#58a6ff] hover:underline underline-offset-2"
           >
             Go to Compare
           </button>

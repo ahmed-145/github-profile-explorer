@@ -13,10 +13,10 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="glass-strong sticky top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-[#30363d] bg-[#161b22]/90 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
-          <Link href="/" className="font-semibold text-white text-base tracking-tight">
+          <Link href="/" className="font-bold text-[#f0f6fc] text-base tracking-tight">
             GitExplorer
           </Link>
 
@@ -28,8 +28,8 @@ export default function Navbar() {
                 className={clsx(
                   'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                   pathname === href
-                    ? 'bg-zinc-800 text-white'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                    ? 'bg-[#21262d] text-[#f0f6fc] border border-[#30363d]'
+                    : 'text-[#8b949e] hover:text-[#f0f6fc] hover:bg-[#21262d]'
                 )}
               >
                 {label}
